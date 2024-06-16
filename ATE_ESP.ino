@@ -3,9 +3,9 @@
 
 #define OUTPUT_CTRL 2
 #define CTRL_AC_SOURCE_1 4
-#define CTRL_AC_SOURCE_2 16
-#define CTRL_AC_SOURCE_3 17
-#define CTRL_RELAY_NTC 5
+// #define CTRL_AC_SOURCE_2 16
+// #define CTRL_AC_SOURCE_3 17
+#define CHECK_RELAY_NTC 5
 #define CHECK_VBUS_400V 18
 #define CHECK_OUTPUT_VOLT 19
 #define CHECK_VCC_PFC 21
@@ -17,8 +17,10 @@
 #define FAN_ON 25
 #define FAN_STUCK 33
 #define FAN_SHORT 32
-#define NTC_PROTECT 35
-#define DISCHARGE 34
+// #define NTC_PROTECT 35
+// #define DISCHARGE 34
+#define NTC_PROTECT 16
+#define DISCHARGE 17
 
 #define RELAY_NUM 19
 
@@ -42,23 +44,25 @@ void check_and_used(char *relay_name, char *state) {
     } else if (!strcmp(state, "OFF")) {
       digitalWrite(CTRL_AC_SOURCE_1, 0);
     }
-  } else if (!strcmp(relay_name, "CTRL_AC_SOURCE_2")) {
+  // } else if (!strcmp(relay_name, "CTRL_AC_SOURCE_2")) {
+  //   if (!strcmp(state, "ON")) {
+  //     digitalWrite(CTRL_AC_SOURCE_2, 1);
+  //   } else if (!strcmp(state, "OFF")) {
+  //     digitalWrite(CTRL_AC_SOURCE_2, 0);
+  //   }
+  // } else if (!strcmp(relay_name, "CTRL_AC_SOURCE_3")) {
+  //   if (!strcmp(state, "ON")) {
+  //     digitalWrite(CTRL_AC_SOURCE_3, 1);
+  //   } else if (!strcmp(state, "OFF")) {
+  //     digitalWrite(CTRL_AC_SOURCE_3, 0);
+  //   }
+  } else if (!strc
+  
+  mp(relay_name, "CHECK_RELAY_NTC")) {
     if (!strcmp(state, "ON")) {
-      digitalWrite(CTRL_AC_SOURCE_2, 1);
+      digitalWrite(CHECK_RELAY_NTC, 1);
     } else if (!strcmp(state, "OFF")) {
-      digitalWrite(CTRL_AC_SOURCE_2, 0);
-    }
-  } else if (!strcmp(relay_name, "CTRL_AC_SOURCE_3")) {
-    if (!strcmp(state, "ON")) {
-      digitalWrite(CTRL_AC_SOURCE_3, 1);
-    } else if (!strcmp(state, "OFF")) {
-      digitalWrite(CTRL_AC_SOURCE_3, 0);
-    }
-  } else if (!strcmp(relay_name, "CTRL_RELAY_NTC")) {
-    if (!strcmp(state, "ON")) {
-      digitalWrite(CTRL_RELAY_NTC, 1);
-    } else if (!strcmp(state, "OFF")) {
-      digitalWrite(CTRL_RELAY_NTC, 0);
+      digitalWrite(CHECK_RELAY_NTC, 0);
     }
   } else if (!strcmp(relay_name, "CHECK_VBUS_400V")) {
     if (!strcmp(state, "ON")) {
@@ -151,22 +155,19 @@ void check_and_used(char *relay_name, char *state) {
 
 void action() {
   String command_uart;
-  char *command = (char *)malloc(30UL);
-  char *relay_name = (char *)malloc(20UL);
-  char *state = (char *)malloc(4UL);
+  char command[30];
+  char relay_name[25];
+  char state[4];
   while (Serial.available() == 0) {}
   command_uart = Serial.readString();
   command_uart.toCharArray(command, command_uart.length());
   // strcpy(command, ConvertStringToCharArray(command_uart));
   sscanf(command, "%s %s", relay_name, state);
-  if (relay_name != NULL && state != NULL) {
+  if (relay_name[0] != '\0' && state[0] != '\0') {
     check_and_used(relay_name, state);
   } else {
     Serial.printf("FAIL COMMAND: RELAY_NAME OR STATE IS NULL: relay_name = %s state = &s\n", relay_name, state);
   }
-  free(command);
-  free(relay_name);
-  free(state);
 }
 
 
